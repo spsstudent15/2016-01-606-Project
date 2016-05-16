@@ -119,7 +119,7 @@ Can these data be used to establish causal links between the variables of intere
 
 ## Transformation
 
-### 311 Data
+### 311 Raw Data
 
 Selected 311 complaints from January 1, 2013 through May 12, 2016.
 Millions of complaints across all city agencies: Health, Environmental Protection, Sanitation, Police, others.
@@ -141,6 +141,29 @@ Line/Marking - Faded
 To further simplify, all asphalt conditions were combined into one roadway surface complaint group, named "asphalt."
 
 Filled in missing values as 0.
+
+```{r, eval=TRUE, warning= FALSE, message=FALSE}
+
+sample311<-getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/sample311.csv")
+
+df1<- data.frame(read.csv(text=sample311))
+
+datatable(df1, options = list( pageLength = 5, lengthMenu = c(5, 10)), rownames= TRUE)
+
+```
+
+#### 311 Street Condition Complaint Categories
+
+```{r, eval=TRUE, warning= FALSE, message=FALSE}
+
+complaintlist<-getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/listcomplainttypes.csv")
+
+df2<- data.frame(read.csv(text=complaintlist))
+
+datatable(df, options = list( pageLength = 5, lengthMenu = c(5, 10)), rownames= TRUE)
+```
+
+
 
 ### Zip Code and Borough Data
 
