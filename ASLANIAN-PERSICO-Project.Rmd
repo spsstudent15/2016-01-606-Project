@@ -64,22 +64,25 @@ http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid
 ```{r, libraries, eval=TRUE, warning=FALSE, message=FALSE}
 library(DT)
 library(ggplot2)
-library(httr)
-library(jsonlite)
 library(knitr)
-library(leaflet)
 library(plotly)
 library(plyr)
 library(dplyr)
-library(RColorBrewer)
 library(RCurl)
 library(rmarkdown)
 library(stringr)
 library(tidyr)
-library(XML)
-library(scales)
+
 ```
 
+```{r, libraries, eval=FALSE, warning=FALSE, message=FALSE}
+library(XML)
+library(scales)
+library(RColorBrewer)
+library(leaflet)
+library(httr)
+library(jsonlite)
+```
 ## Response 
 What is the response variable, and what type is it (numerical/categorical)?
 
@@ -175,7 +178,7 @@ Perform relevant descriptive statistics, including summary statistics and visual
 ### Load Data
 
 ```{r loaddata, eval=TRUE}
-sumzipdata <- getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/zipdatacsv1.csv")
+sumzipdata <- getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/zipdatacsv2.csv")
 
 sdata<- data.frame(read.csv(text=sumzipdata))
 ```
@@ -223,10 +226,18 @@ abline(minc2)
 ## Statistics: Race
 
 ```{r race, eval=TRUE}
+# Correlation for Percent White
+# Correlation for Percent Black
 # Distribution of Percent Whites in Zip Code
 # Distribution of Percent Blacks in Zip Code
 # Road Condition Complaints vs. Percentage Whites
 # Road Condition Complaints vs. Percentage Blacks
+# Residuals for Percent White
+# Residuals for Percent Black
+
+
+wcor<-cor(sdata$pcomp, sdata$pwhite)
+bcor<-cor(sdata$pcomp, sdata$pblack)
 
 hist(sdata$pwhite, col="#ffcc80", breaks=20, main="White Population", xlab="Distribution of Percent Whites in Zip Code", ylim=c(0,70))
 
@@ -239,7 +250,22 @@ abline(mwhite)
 mblack<- lm(pcomp ~ pblack, data = sdata)
 plot(sdata$pcomp ~ sdata$pblack, col="#26a69a", main="Road Condition Complaints vs. Percentage Blacks", xlab="Percent Black Population per Zip Code", ylab="Complaints Per Capita")
 abline(mblack)
+
+plot(mwhite$residuals ~ sdata$pcomp, main="Residuals for Percent White", col="#ffcc80")
+abline(mwhite)
+
+hist(mwhite$residuals, main="Residuals for Percent White", ylim=c(0,80), xlab="Residuals" , col="#ffcc80")
+
+plot(mblack$residuals ~ sdata$pcomp, main="Residuals for Percent Black", col="#26a69a")
+abline(mblack)
+
+hist(mblack$residuals, main="Residuals for Percent Black", ylim=(c(0,80)), xlab="Residuals", col="#26a69a")
+
 ```
+
+The correlation for whites and per capita roadway complaints is `r round(wcor,2)`.
+
+The correlation for blacks and per capita roadway complaints is `r round(bcor,2)`.
 
 ## Statistics: Borough
 
@@ -291,18 +317,18 @@ boxplot(
     sdata$pcompf[sdata$borough=="STATEN ISLAND"],
     col=(c("#E8EAF6","#c5cae9","#9fa8da","#7986cb","#5c6bc0")),
     names=(c("BRONX","BKLYN","MANHATTAN","QUEENS","STATEN IS.")), 
-    main="Per Capita Complaints by Borough, Faded Markings Only", ylab="Per Capita Faded Markings Complaints", xlab="Borough")
+    main="Per Capita Complaints by Borough, Faded Markings Only", ylab="Per Capita Faded Markings Complaints", xlab="Borough", ylim=c(0,0.006))
 ```
 
-> *Compare means of distributions by splitting the weight variable into the habit groups.*
 
-```{r means, eval=FALSE}
-#categorical
-by(nc$weight, nc$habit, mean)
-by(nc$weight, nc$habit, summary)
-hist(nc$weight, col="green")
+Comparing the mean of the distributions by splitting the variable into the borough groups.
+
+```{r boromeans, eval=TRUE}
+# means by borough
+
+by(sdata$pcomp, sdata$borough, mean)
+by(sdata$pcomp, sdata$borough, summary)
 ```
-
 
 
 ## Outliers
@@ -379,8 +405,6 @@ inference(y = nc$weight, x = nc$habit, est = "mean", type = "ci", null = 0,
           alternative = "twosided", method = "theoretical", 
           order = c("smoker","nonsmoker"))
 ```
-
-
 
 
 ## Check conditions
