@@ -24,6 +24,10 @@ Explanation of Census
 ## Cases
 What are the cases, and how many are there?
 
+Cases by zip code, combined data for 
+182 zip codes in NYC
+325025 street condition complaints with reported zip code in date range 
+
 ## Data Collection
 Describe the method of data collection.
 
@@ -57,7 +61,7 @@ http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid
 # Data 
 
 ## Libraries
-```{r, Libraries, eval=TRUE, warning=FALSE, message=FALSE}
+```{r, libraries, eval=TRUE, warning=FALSE, message=FALSE}
 library(DT)
 library(ggplot2)
 library(httr)
@@ -87,7 +91,6 @@ What is the explanatory variable(s), and what type is it (numerical/categorival)
 182 zip codes in NYC
 96710 mean income by zip code for NYC
 325025 street condition complaints with reported zip code in date range 
-3095931 estimated households in NYC
 
 ## Generalizability
 
@@ -170,57 +173,42 @@ HC03_VC50 - Percent; RACE - One race - Black or African American
 Perform relevant descriptive statistics, including summary statistics and visualization of the data. Also address what the exploratory data analysis suggests about your research question.
 
 ### Load Data
+
 ```{r loaddata, eval=TRUE}
 sumzipdata <- getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/zipdatacsv1.csv")
 
 sdata<- data.frame(read.csv(text=sumzipdata))
 ```
 
-### Summary
+### Statistics: Summary
 
 ```{r sum1, eval=TRUE}
-# structure and summary
+# Structure
+# Summary
+# Distribution of Road Condition Complaints Per Capita
 
 str(sdata)
 summary(sdata)
-```
-
-```{r box1, eval=TRUE}
-#Box Plots
-
-#Box Plot of Income and Population by Zip Code
-
-boxplot(sdata$income, sdata$pop, names=c("Income","Population"), col=c("#c5e1a5","#ffe0b2"), main="Box Plot of Income and Population by Zip Code")
-```
-
-```{r hist1, eval=TRUE}
-# Histograms
-
-# Distribution of Road Condition Complaints Per Capita
-# Distribution of Income
-# Black Population
 
 hist(sdata$pcomp, col="#fff9c4", breaks=10, main="Distribution of Road Condition Complaints Per Capita", xlab="Complaints Per Capita")
-
-hist(sdata$income, col="#c5e1a5", breaks=20, main="Distribution of Income", xlab="Income")
-
-hist(sdata$pwhite, col="#ffcc80", breaks=20, main="White Population", xlab="Percent Whites in Zip Code", ylim=c(0,70))
-
-hist(sdata$pblack, col="#26a69a", breaks=20, main="Black Population", xlab="Percent Blacks in Zip Code", ylim=c(0,70))
 ```
 
+## Statistics: Income
 
-```{r scatter1, eval=TRUE}
-# Scatterplots for Income
-
+```{r income, eval=TRUE}
+# Box Plot of Income and Population by Zip Code
+# Distribution of Income
 # Road Condition Complaints vs. Income
 # Road Condition Complaints vs. Income, with xlim1
 # Road Condition Complaints vs. Income, with xlim2
 
+boxplot(sdata$income, sdata$pop, names=c("Income","Population"), col=c("#c5e1a5","#ffe0b2"), main="Box Plot of Income and Population by Zip Code")
+
+hist(sdata$income, col="#c5e1a5", breaks=20, main="Distribution of Income", xlab="Income")
+
 minc<- lm(pcomp ~ income, data = sdata)
 plot(sdata$pcomp ~ sdata$income, col="#81d4fa", main="Road Condition Complaints vs. Income", xlab="Income", ylab="Complaints Per Capita")
 abline(minc)
-
 
 minc1<- lm(pcomp ~ income, data = sdata)
 plot(sdata$pcomp ~ sdata$income, col="#1976d2", main="Road Condition Complaints vs. Income, $20,000-$200,000", xlab="Income", ylab="Complaints Per Capita", xlim=c(20000,200000))
@@ -232,12 +220,17 @@ abline(minc2)
 
 ```
 
+## Statistics: Race
 
-```{r scatter2, eval=TRUE}
-# Scatterplots for Race
-
+```{r race, eval=TRUE}
+# Distribution of Percent Whites in Zip Code
+# Distribution of Percent Blacks in Zip Code
 # Road Condition Complaints vs. Percentage Whites
 # Road Condition Complaints vs. Percentage Blacks
+
+hist(sdata$pwhite, col="#ffcc80", breaks=20, main="White Population", xlab="Distribution of Percent Whites in Zip Code", ylim=c(0,70))
+
+hist(sdata$pblack, col="#26a69a", breaks=20, main="Black Population", xlab="Distribution of Percent Blacks in Zip Code", ylim=c(0,70))
 
 mwhite<- lm(pcomp ~ pwhite, data = sdata)
 plot(sdata$pcomp ~ sdata$pwhite, col="#ffcc80", main="Road Condition Complaints vs. Percentage Whites", xlab="Percent White Population per Zip Code", ylab="Complaints Per Capita")
@@ -248,8 +241,9 @@ plot(sdata$pcomp ~ sdata$pblack, col="#26a69a", main="Road Condition Complaints 
 abline(mblack)
 ```
 
+## Statistics: Borough
 
-```{r box2, eval=TRUE}
+```{r boro, eval=TRUE}
 # Box Plots by Borough
 
 # Per Capita Complaints by Borough
@@ -311,7 +305,7 @@ hist(nc$weight, col="green")
 
 
 
-### Outliers
+## Outliers
 
 High income
 
