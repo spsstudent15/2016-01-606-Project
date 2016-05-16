@@ -1,27 +1,27 @@
-Street Condition Complaint Type
-Blocked - Construction
-Cave-in
-Crack Sealing
-Crash Cushion Defect
-Defacement
-Defective Hardware
-Depression Maintenance
-Dumpster - Causing Damage
-Dumpster - Construction Waste
-Failed Street Repair
-General Bad Condition
-Guard Rail - Street
-Hummock
-Line/Marking - After Repaving
-Line/Marking - Faded
-Maintenance Cover
-Plate Condition - Anti-Skid
-Plate Condition - Noisy
-Plate Condition - Open
-Plate Condition - Shifted
-Pothole
-"Rough, Pitted or Cracked Roads"
-Strip Paving
-Suspected Street Cut
-Unsafe Worksite
-Wear & Tear
+Street Condition Complaint Type,Description
+Blocked - Construction,roadway is blocked due to construction
+Cave-in,roadway has caved in due to support issue
+Crack Sealing,crack in roadway
+Crash Cushion Defect,crack repair problem
+Defacement,graffiti or vandalism
+Defective Hardware,metal curbs or utility covers or plates
+Depression Maintenance,roadway beginning to cave
+Dumpster - Causing Damage,dumpster damaging roadway
+Dumpster - Construction Waste,dumpster causing debris
+Failed Street Repair,issue with repair
+General Bad Condition,general condition
+Guard Rail - Street,issue with protective guardrails along roadway
+Hummock,uneven asphalt due to mounds formed
+Line/Marking - After Repaving,street was paved but markings not restored
+Line/Marking - Faded,markings need refurbishing
+Maintenance Cover,issue with utility cover
+Plate Condition - Anti-Skid,issue with metal plate covering roadway repair
+Plate Condition - Noisy,issue with metal plate covering roadway repair
+Plate Condition - Open,issue with metal plate covering roadway repair
+Plate Condition - Shifted,issue with metal plate covering roadway repair
+Pothole,pothole
+"Rough, Pitted or Cracked Roads",poor roadway surface
+Strip Paving,issue with partial or small scale paving
+Suspected Street Cut,possible illegal cut into roadway surface
+Unsafe Worksite,unsafe worksite
+Wear & Tear,general condition

@@ -1,0 +1,15 @@
+variable,description
+zip1,zip code with ZIP_ prefix
+borough,borough of NYC
+asphalt,number of asphalt condition complaints
+missing,number of missing markings complaints
+faded,number of faded markings complaints
+complaints,total number of complaints
+income,income for zip code
+pop,population for zip code
+pwhite,percent white population for zip code
+pblack,percent black population for zip code
+pcomp,complaints per capita for zip code
+pcompa,asphalt complaints per capita for zip code
+pcompm,missing markings complaints per capita for zip code
+pcompf,faded markings complaints per capita for zip code

@@ -13,6 +13,9 @@ output:
 
 # Introduction
 
+
+---
+
 ## Topic
 
 What is your research question? Why do you care? Why should others care?
@@ -25,6 +28,8 @@ Null hypothesis
 
 Alternate hypothesis
 
+---
+
 ## Cases
 What are the cases, and how many are there?
 
@@ -32,43 +37,54 @@ Cases by zip code, combined data for
 182 zip codes in NYC
 325025 street condition complaints with reported zip code in date range 
 
+---
+
 ## Data Collection
 Describe the method of data collection.
+
+---
 
 ## Study Type
 What type of study is this (observational/experiment)?
 Explain how you've arrived at your conclusion using information on the sampling and/or experimental design.
 
-## Sources
+---
 
-311 Complaint Data
+### Sources
+
+***New York City 311 Data***
 NYC Open Data
 311 Service Requests from 2010 to Present
-https://nycopendata.socrata.com/
-Selected 311 complaints from January 1, 2013 through May 12, 2016.
-Filtered by Complaint category - "Street Condition" complaint only
+<a href="https://nycopendata.socrata.com/">NYC Open Data</a>
 
-Income Data
+
+***US Income Data***
 US Census
 2010-2014 American Community Survey 5-Year Estimates
 Selected economic characteristics
-http://factfinder.census.gov/
+<a href="http://factfinder.census.gov/">US Census Factfinder Portal</a>
 
-Population and Demographic Data
+***US Population and Demographic Data***
 US Census
 2010-2014 American Community Survey 5-Year Estimates
 ACS DEMOGRAPHIC AND HOUSING ESTIMATES
-http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_14_5YR_DP05&src=pt
+<a href="http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_14_5YR_DP05&src=pt/">US Census Factfinder Portal</a>
 
 ---
 
 # Data 
 
+---
+
 ## Libraries
-```{r, libraries, eval=TRUE, warning=FALSE, message=FALSE}
+
+The following libraries were required.
+
+```{r libraries, eval=TRUE, warning=FALSE, message=FALSE}
 library(devtools)
 library(DT)
 library(ggplot2)
+library(jsonlite)
 library(knitr)
 library(plotly)
 library(plyr)
@@ -82,20 +98,26 @@ library(stringr)
 library(tidyr)
 ```
 
-```{r, libraries1, eval=FALSE, warning=FALSE, message=FALSE}
+```{r libraries1, eval=FALSE, warning=FALSE, message=FALSE}
 library(XML)
 library(scales)
 library(RColorBrewer)
 library(leaflet)
 library(httr)
-library(jsonlite)
+
 ```
+
+---
 
 ## Response 
 What is the response variable, and what type is it (numerical/categorical)?
 
+---
+
 ## Explanatory
 What is the explanatory variable(s), and what type is it (numerical/categorival)?
+
+---
 
 ## Relevant summary statistics
 
@@ -103,10 +125,14 @@ What is the explanatory variable(s), and what type is it (numerical/categorival)
 96710 mean income by zip code for NYC
 325025 street condition complaints with reported zip code in date range 
 
+---
+
 ## Generalizability
 
 Scope of inference
 Identify the population of interest, and whether the findings from this analysis can be generalized to that population, or, if not, a subsection of that population. Explain why or why not. Also discuss any potential sources of bias that might prevent generalizability.
+
+---
 
 ## Causality
 
@@ -115,17 +141,43 @@ Can these data be used to establish causal links between the variables of intere
 
 ---
 
-# Analysis
+# Transformation
 
-## Transformation
+---
 
-### 311 Raw Data
 
-Selected 311 complaints from January 1, 2013 through May 12, 2016.
-Millions of complaints across all city agencies: Health, Environmental Protection, Sanitation, Police, others.
-Filtered to only Department of Transportation data.
-Filtered to only complaints which had a zip code as part of the complaint.
-Downloaded dataset was already all Street Condition complaints. This was further filtered to the 5 primarily asphalt-related street conditions and 2 markings-related street conditions.
+## Street Conditions
+
+The following is a list of options for street condition complaints when making a report to 311.
+
+For this project, 7 of the 26 complaints were selected. The five asphalt-related complaints were combined into the asphalt complaint category. The remaining two were the two options for marking complaints: faded and missing.
+
+```{r complaintlist, eval=TRUE, warning= FALSE, message=FALSE}
+
+complaintlist<-getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/complainttypes.csv")
+
+df2<- data.frame(read.csv(text=complaintlist))
+
+datatable(df2, options = list( pageLength = 5, lengthMenu = c(5, 10, 40),   initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#01975b', 'color': '#fff'});",
+    "}")), rownames=TRUE)
+```
+
+
+---
+
+## 311 Raw Data
+
+This project spans 311 complaints from January 1, 2013 through May 12, 2016.
+
+311 receives millions of complaints each year across all city agencies: Health, Environmental Protection, Sanitation, Police, and others.
+
+For this project, the data was filtered as follows:
+1. Only Department of Transportation data. 
+2. Only complaints which had a zip code as part of the complaint, to make data analysis possible.
+3. Only complaints which were for a street condition.
+4. Only the 5 primarily asphalt-related street conditions and 2 markings-related street conditions.
 
 Asphalt conditions:
 Pothole	
@@ -142,35 +194,28 @@ To further simplify, all asphalt conditions were combined into one roadway surfa
 
 Filled in missing values as 0.
 
-```{r, eval=TRUE, warning= FALSE, message=FALSE}
+```{r sample311, eval=TRUE, warning= FALSE, message=FALSE}
 
 sample311<-getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/sample311.csv")
 
 df1<- data.frame(read.csv(text=sample311))
 
-datatable(df1, options = list( pageLength = 5, lengthMenu = c(5, 10)), rownames= TRUE)
-
-```
-
-#### 311 Street Condition Complaint Categories
-
-```{r, eval=TRUE, warning= FALSE, message=FALSE}
-
-complaintlist<-getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/listcomplainttypes.csv")
-
-df2<- data.frame(read.csv(text=complaintlist))
-
-datatable(df, options = list( pageLength = 5, lengthMenu = c(5, 10)), rownames= TRUE)
+datatable(df1, options = list( pageLength = 5, lengthMenu = c(5, 10),  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#01975b', 'color': '#fff'});", "}"), rownames=TRUE))
 ```
 
 
+---
 
-### Zip Code and Borough Data
+## Zip Code by Borough
 
 A list of zip codes and their associated borough was extracted from the 311 data.
 Created table of zip codes and associated borough
 
-### Income by Zip Code Data
+---
+
+## Income by Zip Code
 
 Census Data
 
@@ -184,7 +229,9 @@ Added "ZIP_" prefix to prevent forcing to numeric value.
 
 HC01_VC90 - Estimate; INCOME AND BENEFITS (IN 2014 INFLATION-ADJUSTED DOLLARS) - With earnings - Mean earnings (dollars)
 
-### Population and Demographics by Zip Code Data
+---
+
+## Population and Demographics by Zip Code
 
 Census Data
 
@@ -202,17 +249,33 @@ HC01_VC03 - Estimate; SEX AND AGE - Total population
 HC03_VC49 - Percent; RACE - One race - White
 HC03_VC50 - Percent; RACE - One race - Black or African American
 
-## Statistics: Summary
+---
 
-Perform relevant descriptive statistics, including summary statistics and visualization of the data. Also address what the exploratory data analysis suggests about your research question.
+# Statistics
 
-### Load Data
+---
+
+
+## Load Data
+
+The datasets were merged and transformed to display the required data. The combined datasets were uploaded to GitHub for reproducibility.
 
 ```{r loaddata, eval=TRUE}
 sumzipdata <- getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/zipdatacsv2.csv")
 
 sdata<- data.frame(read.csv(text=sumzipdata))
+
+monthdata<- getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/monthlycomplaints.csv")
+
+mdata<- data.frame(read.csv(text=monthdata))
+
 ```
+
+---
+
+## Summary
+
+The following is a summary of the primary dataset.
 
 
 
@@ -227,7 +290,9 @@ summary(sdata)
 hist(sdata$pcomp, col="#fff9c4", breaks=10, main="Distribution of Road Condition Complaints Per Capita", xlab="Complaints Per Capita")
 ```
 
-## Statistics: Income
+---
+
+## Income
 
 ```{r income, eval=TRUE}
 # Box Plot of Income and Population by Zip Code
@@ -254,7 +319,9 @@ abline(minc2)
 
 ```
 
-## Statistics: Race
+---
+
+## Race
 
 ```{r race, eval=TRUE}
 # Correlation for Percent White
@@ -311,9 +378,9 @@ The correlation for whites and per capita roadway complaints is `r round(wcor,2)
 The correlation for blacks and per capita roadway complaints is `r round(bcor,2)`.
 
 
+---
 
-
-## Statistics: Borough
+## Borough
 
 ```{r boro, eval=TRUE}
 # Box Plots by Borough
@@ -376,6 +443,20 @@ by(sdata$pcomp, sdata$borough, mean)
 by(sdata$pcomp, sdata$borough, summary)
 ```
 
+---
+
+## Time
+
+```{r bymonth2, eval=TRUE}
+ggplot(
+  mdata, aes(x = yyyymm, y = tcomplaints, fill=tcomplaints)) + 
+  geom_bar(stat="identity") +
+  ggtitle("Complaints by Month")+ 
+  theme(axis.text=element_text(angle=90))+
+  labs(x="Month",y="Complaints")
+```
+
+---
 
 ## Outliers
 
@@ -390,9 +471,9 @@ ZIP_10004 Lower Manhattan, includes the NYC DOT headquarters
 
 ZIP_11363 Little Neck, Queens
 
-
 Note on missing/incorrect zip codes showing as 0 income or NA income
 
+---
 
 ## Inference
 
@@ -406,21 +487,27 @@ Theoretical inference (if possible) - hypothesis test and confidence interval
 Simulation based inference - hypothesis test and confidence interval
 Brief description of methodology that reflects your conceptual understanding
 
+---
+
 ### Hypothesis test
 
+---
 
 ### Confidence interval
 
 
 ---
 
-# Conclusion: 
+# Conclusion
+
+---
 
 ## Summary
-Write a brief summary of your findings without repeating your statements from earlier. 
+
+
+---
 
 ## Insights
-Also include a discussion of what you have learned about your research question and the data you collected. 
 
 Self-selection of 311 reporters
 Why people may  not want to call 311
@@ -430,5 +517,9 @@ Median income would have been better than mean since high incomes in large citie
 
 Missing and faded markings might mean the same thing to 311 callers. For operational purposes I was looking for accurate data since these are handled through different processes.
 
+Problems with excluding blank zip codes - this might leave out disenfranchised neighborhoods.
+
+---
+
 ## Future Research
-You may also want to include ideas for possible future research.
+
