@@ -1,0 +1,421 @@
+---
+title: "Data 606 Final Project: New York City Road Condition Complaints and Demographics"
+author: "Armenoush Aslanian-Persico"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    code_folding: hide
+    theme: spacelab
+  
+---
+
+# Introduction
+
+## Topic
+
+What is your research question? Why do you care? Why should others care?
+
+Explanation of 311
+
+Explanation of Census
+
+## Cases
+What are the cases, and how many are there?
+
+## Data Collection
+Describe the method of data collection.
+
+## Study Type
+What type of study is this (observational/experiment)?
+Explain how you've arrived at your conclusion using information on the sampling and/or experimental design.
+
+## Sources
+
+311 Complaint Data
+NYC Open Data
+311 Service Requests from 2010 to Present
+https://nycopendata.socrata.com/
+Selected 311 complaints from January 1, 2013 through May 12, 2016.
+Filtered by Complaint category - "Street Condition" complaint only
+
+Income Data
+US Census
+2010-2014 American Community Survey 5-Year Estimates
+Selected economic characteristics
+http://factfinder.census.gov/
+
+Population and Demographic Data
+US Census
+2010-2014 American Community Survey 5-Year Estimates
+ACS DEMOGRAPHIC AND HOUSING ESTIMATES
+http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_14_5YR_DP05&src=pt
+
+---
+
+# Data 
+
+## Libraries
+```{r, Libraries, eval=TRUE, warning=FALSE, message=FALSE}
+library(DT)
+library(ggplot2)
+library(httr)
+library(jsonlite)
+library(knitr)
+library(leaflet)
+library(plotly)
+library(plyr)
+library(dplyr)
+library(RColorBrewer)
+library(RCurl)
+library(rmarkdown)
+library(stringr)
+library(tidyr)
+library(XML)
+library(scales)
+```
+
+## Response 
+What is the response variable, and what type is it (numerical/categorical)?
+
+## Explanatory
+What is the explanatory variable(s), and what type is it (numerical/categorival)?
+
+## Relevant summary statistics
+
+182 zip codes in NYC
+96710 mean income by zip code for NYC
+325025 street condition complaints with reported zip code in date range 
+3095931 estimated households in NYC
+
+## Generalizability
+
+Scope of inference
+Identify the population of interest, and whether the findings from this analysis can be generalized to that population, or, if not, a subsection of that population. Explain why or why not. Also discuss any potential sources of bias that might prevent generalizability.
+
+## Causality
+
+Scope of inference
+Can these data be used to establish causal links between the variables of interest? Explain why or why not.
+
+---
+
+# Analysis
+
+## Transformation
+
+### 311 Data
+
+Selected 311 complaints from January 1, 2013 through May 12, 2016.
+Millions of complaints across all city agencies: Health, Environmental Protection, Sanitation, Police, others.
+Filtered to only Department of Transportation data.
+Filtered to only complaints which had a zip code as part of the complaint.
+Downloaded dataset was already all Street Condition complaints. This was further filtered to the 5 primarily asphalt-related street conditions and 2 markings-related street conditions.
+
+Asphalt conditions:
+Pothole	
+Rough, Pitted or Cracked Roads	
+Hummock	
+Cave-in	
+Failed Street Repair	
+
+Marking conditions:
+Line/Marking - After Repaving
+Line/Marking - Faded
+
+To further simplify, all asphalt conditions were combined into one roadway surface complaint group, named "asphalt."
+
+Filled in missing values as 0.
+
+### Zip Code and Borough Data
+
+A list of zip codes and their associated borough was extracted from the 311 data.
+Created table of zip codes and associated borough
+
+### Income by Zip Code Data
+
+Census Data
+
+Downloaded New York State zip codes only.
+
+Selected columns using metadata.
+
+Converted zip column to display zip code only.
+
+Added "ZIP_" prefix to prevent forcing to numeric value.
+
+HC01_VC90 - Estimate; INCOME AND BENEFITS (IN 2014 INFLATION-ADJUSTED DOLLARS) - With earnings - Mean earnings (dollars)
+
+### Population and Demographics by Zip Code Data
+
+Census Data
+
+Downloaded New York State zip codes only.
+
+Selected columns using metadata.
+
+Converted zip column to display zip code only.
+
+Added "ZIP_" prefix to prevent forcing to numeric value.
+
+Total population per zip code
+
+HC01_VC03 - Estimate; SEX AND AGE - Total population
+HC03_VC49 - Percent; RACE - One race - White
+HC03_VC50 - Percent; RACE - One race - Black or African American
+
+## Statistics
+
+Perform relevant descriptive statistics, including summary statistics and visualization of the data. Also address what the exploratory data analysis suggests about your research question.
+
+### Load Data
+```{r loaddata, eval=TRUE}
+sumzipdata <- getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/zipdatacsv1.csv")
+
+sdata<- data.frame(read.csv(text=sumzipdata))
+```
+
+### Summary
+
+```{r sum1, eval=TRUE}
+# structure and summary
+
+str(sdata)
+summary(sdata)
+```
+
+```{r box1, eval=TRUE}
+#Box Plots
+
+#Box Plot of Income and Population by Zip Code
+
+boxplot(sdata$income, sdata$pop, names=c("Income","Population"), col=c("#c5e1a5","#ffe0b2"), main="Box Plot of Income and Population by Zip Code")
+```
+
+```{r hist1, eval=TRUE}
+# Histograms
+
+# Distribution of Road Condition Complaints Per Capita
+# Distribution of Income
+# Black Population
+
+hist(sdata$pcomp, col="#fff9c4", breaks=10, main="Distribution of Road Condition Complaints Per Capita", xlab="Complaints Per Capita")
+
+hist(sdata$income, col="#c5e1a5", breaks=20, main="Distribution of Income", xlab="Income")
+
+hist(sdata$pwhite, col="#ffcc80", breaks=20, main="White Population", xlab="Percent Whites in Zip Code", ylim=c(0,70))
+
+hist(sdata$pblack, col="#26a69a", breaks=20, main="Black Population", xlab="Percent Blacks in Zip Code", ylim=c(0,70))
+```
+
+
+```{r scatter1, eval=TRUE}
+# Scatterplots for Income
+
+# Road Condition Complaints vs. Income
+# Road Condition Complaints vs. Income, with xlim1
+# Road Condition Complaints vs. Income, with xlim2
+
+minc<- lm(pcomp ~ income, data = sdata)
+plot(sdata$pcomp ~ sdata$income, col="#81d4fa", main="Road Condition Complaints vs. Income", xlab="Income", ylab="Complaints Per Capita")
+abline(minc)
+
+
+minc1<- lm(pcomp ~ income, data = sdata)
+plot(sdata$pcomp ~ sdata$income, col="#1976d2", main="Road Condition Complaints vs. Income, $20,000-$200,000", xlab="Income", ylab="Complaints Per Capita", xlim=c(20000,200000))
+abline(minc1)
+
+minc2<- lm(pcomp ~ income, data = sdata)
+plot(sdata$pcomp ~ sdata$income, col="#01579b", main="Road Condition Complaints vs. Income, $30,000-$100,000", xlab="Income", ylab="Complaints Per Capita", xlim=c(30000,100000), ylim=c(0,0.10))
+abline(minc2)
+
+```
+
+
+```{r scatter2, eval=TRUE}
+# Scatterplots for Race
+
+# Road Condition Complaints vs. Percentage Whites
+# Road Condition Complaints vs. Percentage Blacks
+
+mwhite<- lm(pcomp ~ pwhite, data = sdata)
+plot(sdata$pcomp ~ sdata$pwhite, col="#ffcc80", main="Road Condition Complaints vs. Percentage Whites", xlab="Percent White Population per Zip Code", ylab="Complaints Per Capita")
+abline(mwhite)
+
+mblack<- lm(pcomp ~ pblack, data = sdata)
+plot(sdata$pcomp ~ sdata$pblack, col="#26a69a", main="Road Condition Complaints vs. Percentage Blacks", xlab="Percent Black Population per Zip Code", ylab="Complaints Per Capita")
+abline(mblack)
+```
+
+
+```{r box2, eval=TRUE}
+# Box Plots by Borough
+
+# Per Capita Complaints by Borough
+# Per Capita Complaints by Borough, Asphalt Only
+# Per Capita Complaints by Borough, Missing Markings Only
+# Per Capita Complaints by Borough, Faded Markings Only
+
+
+boxplot(
+    sdata$pcomp[sdata$borough=="BRONX"],
+    sdata$pcomp[sdata$borough=="BROOKLYN"],
+    sdata$pcomp[sdata$borough=="MANHATTAN"],
+    sdata$pcomp[sdata$borough=="QUEENS"],
+    sdata$pcomp[sdata$borough=="STATEN ISLAND"],
+    col=(c("#E8EAF6","#c5cae9","#9fa8da","#7986cb","#5c6bc0")),
+    names=(c("BRONX","BKLYN","MANHATTAN","QUEENS","STATEN IS.")), 
+    main="Per Capita Complaints by Borough", ylab="Per Capita Complaints", xlab="Borough")
+
+
+boxplot(
+    sdata$pcompa[sdata$borough=="BRONX"],
+    sdata$pcompa[sdata$borough=="BROOKLYN"],
+    sdata$pcompa[sdata$borough=="MANHATTAN"],
+    sdata$pcompa[sdata$borough=="QUEENS"],
+    sdata$pcompa[sdata$borough=="STATEN ISLAND"],
+    col=(c("#E8EAF6","#c5cae9","#9fa8da","#7986cb","#5c6bc0")),
+    names=(c("BRONX","BKLYN","MANHATTAN","QUEENS","STATEN IS.")), 
+    main="Per Capita Complaints by Borough, Asphalt Only", ylab="Per Capita Asphalt Complaints", xlab="Borough")
+
+boxplot(
+    sdata$pcompm[sdata$borough=="BRONX"],
+    sdata$pcompm[sdata$borough=="BROOKLYN"],
+    sdata$pcompm[sdata$borough=="MANHATTAN"],
+    sdata$pcompm[sdata$borough=="QUEENS"],
+    sdata$pcompm[sdata$borough=="STATEN ISLAND"],
+    col=(c("#E8EAF6","#c5cae9","#9fa8da","#7986cb","#5c6bc0")),
+    names=(c("BRONX","BKLYN","MANHATTAN","QUEENS","STATEN IS.")), 
+    main="Per Capita Complaints by Borough, Missing Markings Only", ylab="Per Capita Missing Markings Complaints", xlab="Borough")
+
+boxplot(
+    sdata$pcompf[sdata$borough=="BRONX"],
+    sdata$pcompf[sdata$borough=="BROOKLYN"],
+    sdata$pcompf[sdata$borough=="MANHATTAN"],
+    sdata$pcompf[sdata$borough=="QUEENS"],
+    sdata$pcompf[sdata$borough=="STATEN ISLAND"],
+    col=(c("#E8EAF6","#c5cae9","#9fa8da","#7986cb","#5c6bc0")),
+    names=(c("BRONX","BKLYN","MANHATTAN","QUEENS","STATEN IS.")), 
+    main="Per Capita Complaints by Borough, Faded Markings Only", ylab="Per Capita Faded Markings Complaints", xlab="Borough")
+```
+
+> *Compare means of distributions by splitting the weight variable into the habit groups.*
+
+```{r means, eval=FALSE}
+#categorical
+by(nc$weight, nc$habit, mean)
+by(nc$weight, nc$habit, summary)
+hist(nc$weight, col="green")
+```
+
+
+
+### Outliers
+
+High income
+
+ZIP_10803 232513	BRONX actually Westchester county
+
+ZIP_11109 168940	QUEENS Long Island City new skyscraper condos on the waterfront
+
+Highest complaints per capita
+ZIP_10004 Lower Manhattan, includes the NYC DOT headquarters
+
+ZIP_11363 Little Neck, Queens
+
+
+Note on missing/incorrect zip codes showing as 0 income or NA income
+
+
+## Inference
+If your data fails some conditions and you can't use a theoretical method, then you should use simulation. If you can use both methods, then you should use both methods. It is your responsibility to figure out the appropriate methodology.
+
+Are the conditions for inference satisfied?
+
+Sample size n>30
+Unimodal normal distribution
+Random sample
+
+> *Check if inference conditions are satisfied.*
+
+```{r inf1, eval=FALSE}
+#categorical
+by(nc$weight, nc$habit, length)
+hist(nc$weight, col="green")
+```
+
+
+Write the hypotheses for testing if the average weights of babies born to smoking and non-smoking mothers are different.
+
+> *The null testing hypothesis would be that there is no difference between the average weights of babies born to smokers and nonsmoker mothers. The alternate hypothesis would be that there is a difference in the average weights between these two groups.*
+
+Next, we introduce a new function, `inference`, that we will use for conducting
+hypothesis tests and constructing confidence intervals. 
+
+```{r inf2, eval=FALSE}
+#categorical
+inference(y = nc$weight, x = nc$habit, est = "mean", type = "ht", null = 0, 
+          alternative = "twosided", method = "theoretical")
+```
+
+ 
+The first argument is `y`, which is the response variable that we are 
+interested in: `nc$weight`. The second argument is the explanatory variable, 
+`x`, which is the variable that splits the data into two groups, smokers and 
+non-smokers: `nc$habit`. The third argument, `est`, is the parameter we're 
+interested in: `"mean"` (other options are `"median"`, or `"proportion"`.) Next
+we decide on the `type` of inference we want: a hypothesis test (`"ht"`) or a 
+confidence interval (`"ci"`). When performing a hypothesis test, we also need 
+to supply the `null` value, which in this case is `0`, since the null 
+hypothesis sets the two population means equal to each other. The `alternative`
+hypothesis can be `"less"`, `"greater"`, or `"twosided"`. Lastly, the `method` 
+of inference can be `"theoretical"` or `"simulation"` based.
+
+
+Change the `type` argument to `"ci"` to construct and record a confidence 
+interval for the difference between the weights of babies born to smoking and 
+non-smoking mothers.
+
+By default the function reports an interval for ($\mu_{nonsmoker} - \mu_{smoker}$)
+. We can easily change this order by using the `order` argument:
+
+```{r inf3, eval=FALSE}
+inference(y = nc$weight, x = nc$habit, est = "mean", type = "ci", null = 0, 
+          alternative = "twosided", method = "theoretical", 
+          order = c("smoker","nonsmoker"))
+```
+
+
+
+
+## Check conditions
+
+Theoretical inference (if possible) - hypothesis test and confidence interval
+Simulation based inference - hypothesis test and confidence interval
+Brief description of methodology that reflects your conceptual understanding
+
+### Hypothesis test
+
+### Confidence interval
+
+---
+
+# Conclusion: 
+
+## Summary
+Write a brief summary of your findings without repeating your statements from earlier. 
+
+## Insights
+Also include a discussion of what you have learned about your research question and the data you collected. 
+
+Self-selection of 311 reporters
+Why people may  not want to call 311
+Some of these reports are not available on the mobile app and require the web interface or a phone call to report.
+
+Median income would have been better than mean since high incomes in large cities skews the average higher. In reality, close to 50% of NYC is living below or near the poverty line, a very different story from a mean income of $90,000.
+
+Missing and faded markings might mean the same thing to 311 callers. For operational purposes I was looking for accurate data since these are handled through different processes.
+
+## Future Research
+You may also want to include ideas for possible future research.
