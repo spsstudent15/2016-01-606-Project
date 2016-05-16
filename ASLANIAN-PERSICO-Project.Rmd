@@ -53,21 +53,32 @@ Explain how you've arrived at your conclusion using information on the sampling 
 ### Sources
 
 ***New York City 311 Data***
+
 NYC Open Data
+
 311 Service Requests from 2010 to Present
+
 <a href="https://nycopendata.socrata.com/">NYC Open Data</a>
 
 
 ***US Income Data***
+
 US Census
+
 2010-2014 American Community Survey 5-Year Estimates
+
 Selected economic characteristics
+
 <a href="http://factfinder.census.gov/">US Census Factfinder Portal</a>
 
 ***US Population and Demographic Data***
+
 US Census
+
 2010-2014 American Community Survey 5-Year Estimates
+
 ACS DEMOGRAPHIC AND HOUSING ESTIMATES
+
 <a href="http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_14_5YR_DP05&src=pt/">US Census Factfinder Portal</a>
 
 ---
@@ -174,25 +185,33 @@ This project spans 311 complaints from January 1, 2013 through May 12, 2016.
 311 receives millions of complaints each year across all city agencies: Health, Environmental Protection, Sanitation, Police, and others.
 
 For this project, the data was filtered as follows:
+
 1. Only Department of Transportation data. 
+
 2. Only complaints which had a zip code as part of the complaint, to make data analysis possible.
+
 3. Only complaints which were for a street condition.
+
 4. Only the 5 primarily asphalt-related street conditions and 2 markings-related street conditions.
 
-Asphalt conditions:
-Pothole	
-Rough, Pitted or Cracked Roads	
-Hummock	
-Cave-in	
-Failed Street Repair	
+**Asphalt conditions**
 
-Marking conditions:
-Line/Marking - After Repaving
-Line/Marking - Faded
+- Pothole	
+- Rough, Pitted or Cracked Roads	
+- Hummock	
+- Cave-in	
+- Failed Street Repair	
+
+**Marking conditions**
+
+- Line/Marking - After Repaving
+- Line/Marking - Faded
 
 To further simplify, all asphalt conditions were combined into one roadway surface complaint group, named "asphalt."
 
-Filled in missing values as 0.
+Missing values were filled in as 0.
+
+**Sample view of 311 data**
 
 ```{r sample311, eval=TRUE, warning= FALSE, message=FALSE}
 
@@ -202,7 +221,7 @@ df1<- data.frame(read.csv(text=sample311))
 
 datatable(df1, options = list( pageLength = 5, lengthMenu = c(5, 10),  initComplete = JS(
     "function(settings, json) {",
-    "$(this.api().table().header()).css({'background-color': '#01975b', 'color': '#fff'});", "}"), rownames=TRUE))
+    "$(this.api().table().header()).css({'background-color': '#00838f', 'color': '#fff'});", "}"), rownames=TRUE))
 ```
 
 
@@ -217,48 +236,56 @@ Created table of zip codes and associated borough
 
 ## Income by Zip Code
 
-Census Data
+Income information by zip code was retrieved from the US Census. 
 
-Downloaded New York State zip codes only.
+The data was transformed as follows, via the US Census portal and dataset processing.
 
-Selected columns using metadata.
+- Downloaded New York State zip codes only.
+- Selected columns using metadata.
+- Converted zip column to display zip code only.
+- Added "ZIP_" prefix to prevent forcing to numeric value.
 
-Converted zip column to display zip code only.
+The relevant attribute column names were as follows:
 
-Added "ZIP_" prefix to prevent forcing to numeric value.
+- HC01_VC90 - Estimate; INCOME AND BENEFITS (IN 2014 INFLATION-ADJUSTED DOLLARS) - With earnings - Mean earnings (dollars)
 
-HC01_VC90 - Estimate; INCOME AND BENEFITS (IN 2014 INFLATION-ADJUSTED DOLLARS) - With earnings - Mean earnings (dollars)
-
----
-
-## Population and Demographics by Zip Code
-
-Census Data
-
-Downloaded New York State zip codes only.
-
-Selected columns using metadata.
-
-Converted zip column to display zip code only.
-
-Added "ZIP_" prefix to prevent forcing to numeric value.
-
-Total population per zip code
-
-HC01_VC03 - Estimate; SEX AND AGE - Total population
-HC03_VC49 - Percent; RACE - One race - White
-HC03_VC50 - Percent; RACE - One race - Black or African American
+This attribute corresponded to mean income per zip code.
 
 ---
 
-# Statistics
+## Demographics by Zip Code
+
+Population and demographic information by zip code were retrieved from the US Census and transformed as per the previous section.
+
+The relevant attribute column names were as follows:
+
+- HC01_VC03 - Estimate; SEX AND AGE - Total population
+- HC03_VC49 - Percent; RACE - One race - White
+- HC03_VC50 - Percent; RACE - One race - Black or African American
+
+These attributes corresponded to total population per zip code, percent white per zip code, percent black per zip code.
 
 ---
 
-
-## Load Data
+## Combined Dataset
 
 The datasets were merged and transformed to display the required data. The combined datasets were uploaded to GitHub for reproducibility.
+
+The following is attribute information for the combined primary dataset.
+
+
+**Attribute Names:**
+
+```{r dictionary, eval=TRUE}
+dict <- getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/sdatadictionary.csv")
+
+dictionary<- data.frame(read.csv(text=dict))
+
+datatable(dictionary, options = list( pageLength = 5, lengthMenu = c(5, 10),  initComplete = JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#fff9c4', 'color': '#000000'});", "}"), rownames=TRUE))
+
+```
 
 ```{r loaddata, eval=TRUE}
 sumzipdata <- getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/zipdatacsv2.csv")
@@ -273,11 +300,15 @@ mdata<- data.frame(read.csv(text=monthdata))
 
 ---
 
+# Statistics
+
+
+
+---
+
 ## Summary
 
 The following is a summary of the primary dataset.
-
-
 
 ```{r sum1, eval=TRUE}
 # Structure
@@ -352,7 +383,7 @@ abline(mblack)
 
 # Residuals for Percent White
 
-plot(mwhite$residuals ~ sdata$pcomp, main="Residuals for Percent White", col="#ffcc80")
+plot(mwhite$residuals ~ sdata$pcomp, main="Residuals for Percent White", col="#ffcc80", xlab="Per Capita Complaints", ylab="Residuals")
 abline(mwhite)
 
 hist(mwhite$residuals, main="Residuals for Percent White", ylim=c(0,80), xlab="Residuals" , col="#ffcc80")
@@ -363,7 +394,7 @@ qqline(mwhite$residuals, col="#ffcc80")
 
 # Residuals for Percent Black
 
-plot(mblack$residuals ~ sdata$pcomp, main="Residuals for Percent Black", col="#26a69a")
+plot(mblack$residuals ~ sdata$pcomp, main="Residuals for Percent Black", col="#26a69a", xlab="Per Capita Complaints", ylab="Residuals")
 abline(mblack)
 
 hist(mblack$residuals, main="Residuals for Percent Black", ylim=(c(0,80)), xlab="Residuals", col="#26a69a")
@@ -373,9 +404,9 @@ qqline(mblack$residuals, col="#26a69a")
 
 ```
 
-The correlation for whites and per capita roadway complaints is `r round(wcor,2)`.
+- The correlation for whites and per capita roadway complaints is `r round(wcor,2)`.
 
-The correlation for blacks and per capita roadway complaints is `r round(bcor,2)`.
+- The correlation for blacks and per capita roadway complaints is `r round(bcor,2)`.
 
 
 ---
