@@ -21,6 +21,10 @@ Explanation of 311
 
 Explanation of Census
 
+Null hypothesis
+
+Alternate hypothesis
+
 ## Cases
 What are the cases, and how many are there?
 
@@ -62,20 +66,23 @@ http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid
 
 ## Libraries
 ```{r, libraries, eval=TRUE, warning=FALSE, message=FALSE}
+library(devtools)
 library(DT)
 library(ggplot2)
 library(knitr)
 library(plotly)
 library(plyr)
+library(psych)
 library(dplyr)
 library(RCurl)
+library(reshape2)
 library(rmarkdown)
+library(shiny)
 library(stringr)
 library(tidyr)
-
 ```
 
-```{r, libraries, eval=FALSE, warning=FALSE, message=FALSE}
+```{r, libraries1, eval=FALSE, warning=FALSE, message=FALSE}
 library(XML)
 library(scales)
 library(RColorBrewer)
@@ -83,6 +90,7 @@ library(leaflet)
 library(httr)
 library(jsonlite)
 ```
+
 ## Response 
 What is the response variable, and what type is it (numerical/categorical)?
 
@@ -171,7 +179,7 @@ HC01_VC03 - Estimate; SEX AND AGE - Total population
 HC03_VC49 - Percent; RACE - One race - White
 HC03_VC50 - Percent; RACE - One race - Black or African American
 
-## Statistics
+## Statistics: Summary
 
 Perform relevant descriptive statistics, including summary statistics and visualization of the data. Also address what the exploratory data analysis suggests about your research question.
 
@@ -183,7 +191,7 @@ sumzipdata <- getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606
 sdata<- data.frame(read.csv(text=sumzipdata))
 ```
 
-### Statistics: Summary
+
 
 ```{r sum1, eval=TRUE}
 # Structure
@@ -251,21 +259,36 @@ mblack<- lm(pcomp ~ pblack, data = sdata)
 plot(sdata$pcomp ~ sdata$pblack, col="#26a69a", main="Road Condition Complaints vs. Percentage Blacks", xlab="Percent Black Population per Zip Code", ylab="Complaints Per Capita")
 abline(mblack)
 
+
+# Residuals for Percent White
+
 plot(mwhite$residuals ~ sdata$pcomp, main="Residuals for Percent White", col="#ffcc80")
 abline(mwhite)
 
 hist(mwhite$residuals, main="Residuals for Percent White", ylim=c(0,80), xlab="Residuals" , col="#ffcc80")
+
+qqnorm(mwhite$residuals, col="#ffcc80")
+qqline(mwhite$residuals, col="#ffcc80")
+
+
+# Residuals for Percent Black
 
 plot(mblack$residuals ~ sdata$pcomp, main="Residuals for Percent Black", col="#26a69a")
 abline(mblack)
 
 hist(mblack$residuals, main="Residuals for Percent Black", ylim=(c(0,80)), xlab="Residuals", col="#26a69a")
 
+qqnorm(mblack$residuals, col="#26a69a")
+qqline(mblack$residuals, col="#26a69a")
+
 ```
 
 The correlation for whites and per capita roadway complaints is `r round(wcor,2)`.
 
 The correlation for blacks and per capita roadway complaints is `r round(bcor,2)`.
+
+
+
 
 ## Statistics: Borough
 
@@ -349,65 +372,12 @@ Note on missing/incorrect zip codes showing as 0 income or NA income
 
 
 ## Inference
-If your data fails some conditions and you can't use a theoretical method, then you should use simulation. If you can use both methods, then you should use both methods. It is your responsibility to figure out the appropriate methodology.
 
-Are the conditions for inference satisfied?
+**Satisfying conditions for inference**
 
 Sample size n>30
 Unimodal normal distribution
 Random sample
-
-> *Check if inference conditions are satisfied.*
-
-```{r inf1, eval=FALSE}
-#categorical
-by(nc$weight, nc$habit, length)
-hist(nc$weight, col="green")
-```
-
-
-Write the hypotheses for testing if the average weights of babies born to smoking and non-smoking mothers are different.
-
-> *The null testing hypothesis would be that there is no difference between the average weights of babies born to smokers and nonsmoker mothers. The alternate hypothesis would be that there is a difference in the average weights between these two groups.*
-
-Next, we introduce a new function, `inference`, that we will use for conducting
-hypothesis tests and constructing confidence intervals. 
-
-```{r inf2, eval=FALSE}
-#categorical
-inference(y = nc$weight, x = nc$habit, est = "mean", type = "ht", null = 0, 
-          alternative = "twosided", method = "theoretical")
-```
-
- 
-The first argument is `y`, which is the response variable that we are 
-interested in: `nc$weight`. The second argument is the explanatory variable, 
-`x`, which is the variable that splits the data into two groups, smokers and 
-non-smokers: `nc$habit`. The third argument, `est`, is the parameter we're 
-interested in: `"mean"` (other options are `"median"`, or `"proportion"`.) Next
-we decide on the `type` of inference we want: a hypothesis test (`"ht"`) or a 
-confidence interval (`"ci"`). When performing a hypothesis test, we also need 
-to supply the `null` value, which in this case is `0`, since the null 
-hypothesis sets the two population means equal to each other. The `alternative`
-hypothesis can be `"less"`, `"greater"`, or `"twosided"`. Lastly, the `method` 
-of inference can be `"theoretical"` or `"simulation"` based.
-
-
-Change the `type` argument to `"ci"` to construct and record a confidence 
-interval for the difference between the weights of babies born to smoking and 
-non-smoking mothers.
-
-By default the function reports an interval for ($\mu_{nonsmoker} - \mu_{smoker}$)
-. We can easily change this order by using the `order` argument:
-
-```{r inf3, eval=FALSE}
-inference(y = nc$weight, x = nc$habit, est = "mean", type = "ci", null = 0, 
-          alternative = "twosided", method = "theoretical", 
-          order = c("smoker","nonsmoker"))
-```
-
-
-## Check conditions
 
 Theoretical inference (if possible) - hypothesis test and confidence interval
 Simulation based inference - hypothesis test and confidence interval
@@ -415,7 +385,9 @@ Brief description of methodology that reflects your conceptual understanding
 
 ### Hypothesis test
 
+
 ### Confidence interval
+
 
 ---
 
