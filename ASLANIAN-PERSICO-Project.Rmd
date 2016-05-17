@@ -13,7 +13,7 @@ output:
 
 # Introduction
 
-<center><img src="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/paving.png" height="250px"/></center>
+<center><img src="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/paving.png" height="250px" border="1"/></center>
 
 Photo credit: NYC DOT
 
@@ -33,9 +33,9 @@ Comparing majority black and majority white populations, is there a correlation 
 
 Using mean income per zip code, is there a correlation between income and roadway condition complaints?
 
-$H_0$: Race and income are not predictors of roadway condition complaints per capita..
+$H_0$: Race and income are correlated with roadway condition complaints per capita.
 
-$H_a$: Race and/or income are predictors of roadway condition complaints per capita.
+$H_a$: Race and/or income are correlated with roadway condition complaints per capita.
 
 ---
 
@@ -179,6 +179,8 @@ There are many causalities related to race, income and social services. Therefor
 ---
 
 # Transformation
+
+<center><img src="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/nyc311.png" height="250px"/></center>
 
 ---
 
@@ -592,7 +594,7 @@ summary(minc)
 
 **Inference**
 
-```{r inference, eval=TRUE}
+```{r inference, eval=TRUE, warning=FALSE, message=FALSE}
 # summary
 
 load(url("http://bit.ly/dasi_gss_ws_cl"))
@@ -608,7 +610,7 @@ inference(y = sdata$pblack, est = "mean", type = "ci", null = 0, alternative = "
 **ANOVA summary statistics for income**
 
 
-```{r test2, eval=TRUE}
+```{r test2, eval=TRUE, warning=FALSE, message=FALSE}
 inference(y = sdata$pcomp, x = sdata$income, est = "mean", type = "ht", null = 0, alternative = "greater", method = "theoretical")
 
 ```
@@ -622,6 +624,11 @@ inference(y = sdata$pcomp, x = sdata$income, est = "mean", type = "ht", null = 0
 
 ## Summary
 
+The initial question was to determine if a correlation exists between road condition complaints and income or race. Using plots, linear modeling, and statistical analysis, both race and income did appear to be correlated with per capita complaints. 
+
+The validity of the data was indicated by summary statistics for the chosen variables, which showed low p-values less than 0.05, as well as normality and qqplots for residuals. 
+
+Further data exploration beyond the original scope of the hypothesis resulted in the discovery of significant correlations in complaints by borough, as well as clear seasonal trends in complaint volume. Staten Island has a greater percentage of complaints per capita. Early spring months have the greatest volume of complaints, which is logical as they are after snow plow contact, salt treatment, and snow melting, and when individuals increase outdoor activities.
 
 ---
 
@@ -653,5 +660,7 @@ Crowdsourcing in such a large population is bound to have a relevant result. To 
 
 A citizen with even a beginning knowledge of R can make significant findings to inform their participation in local government. City agencies have increased data science and GIS approaches in the hopes of harnessing these large streams of data. A targeted approach with a limited scope allows for achievable goals. Combining and analyzing these types of datsets can result in programs to reduce injury and fatality rates citywide.
 
+<center><img src="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/chrystiestreet.png" height="250px"/></center>
 
+<center>Photo credit: NYC DOT</center>
 
