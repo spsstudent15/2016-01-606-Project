@@ -18,85 +18,29 @@ output:
 
 ## Topic
 
-What is your research question? Why do you care? Why should others care?
+When the New York City Department of Transportation maintains roadways in a timely manner, few people thank them. But when conditions deteriorate, serious collisions can occur, resulting in loss of life.
 
-Explanation of 311
+Managing a city operation is a challenge. With the increase in data collection and reporting, NYC employees and residents have powerful tools to answer questions and identify problem spots. The result of this data analysis could impact funding, hiring, citywide initiatives, and project management at all levels.
 
-Explanation of Census
 
-Null hypothesis
 
-Alternate hypothesis
+> Null hypothesis and Alternate hypothesis
 
 ---
 
-## Cases
-What are the cases, and how many are there?
-
-Cases by zip code, combined data for 
-182 zip codes in NYC
-325025 street condition complaints with reported zip code in date range 
-
----
-
-## Data Collection
-Describe the method of data collection.
-
----
-
-## Study Type
-What type of study is this (observational/experiment)?
-Explain how you've arrived at your conclusion using information on the sampling and/or experimental design.
-
----
-
-### Sources
-
-***New York City 311 Data***
-
-NYC Open Data
-
-311 Service Requests from 2010 to Present
-
-<a href="https://nycopendata.socrata.com/">NYC Open Data</a>
-
-
-***US Income Data***
-
-US Census
-
-2010-2014 American Community Survey 5-Year Estimates
-
-Selected economic characteristics
-
-<a href="http://factfinder.census.gov/">US Census Factfinder Portal</a>
-
-***US Population and Demographic Data***
-
-US Census
-
-2010-2014 American Community Survey 5-Year Estimates
-
-ACS DEMOGRAPHIC AND HOUSING ESTIMATES
-
-<a href="http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_14_5YR_DP05&src=pt/">US Census Factfinder Portal</a>
-
----
-
-# Data 
-
----
 
 ## Libraries
 
-The following libraries were required.
+Show code to view required libraries.
 
 ```{r libraries, eval=TRUE, warning=FALSE, message=FALSE}
+library(BHH2)
 library(devtools)
 library(DT)
 library(ggplot2)
 library(jsonlite)
 library(knitr)
+library(openintro)
 library(plotly)
 library(plyr)
 library(psych)
@@ -120,35 +64,107 @@ library(httr)
 
 ---
 
-## Response 
-What is the response variable, and what type is it (numerical/categorical)?
+## Cases
+
+The following is a summary of case statistics. For this project, each case is a zip code. Each case is a group of all 311 complaints for that zip code for the selected time period.
+
+```{r sumstats, eval=TRUE, warning= FALSE, message=FALSE}
+Statistic<-c("8,500,000",
+             "1/1/2013 to 5/12/2016", 
+             "325,025", 
+             "281,680",
+             "274,047",
+             "769",
+             "180",
+             "182")
+
+Description<-c("New York City population, estimated.",
+               "Selected date range of 311 complaints.",
+               "Street condition complaints in date range.",
+               "Street condition complaints with a reported zip code.",
+               "Asphalt complaints.",
+               "Missing markings complaints.",
+               "Faded markings complaints.", 
+               "Number of zip codes in NYC, considered as cases.")
+
+test1<-data.frame(Statistic,Description)
+
+kable(test1)
+```
+
 
 ---
 
-## Explanatory
-What is the explanatory variable(s), and what type is it (numerical/categorival)?
+## Sources
+
+**New York City 311 Data**
+
+<a href="https://nycopendata.socrata.com/">NYC Open Data</a>
+
+311 Service Requests from 2010 to Present
+
+
+
+**US Income Data**
+
+<a href="http://factfinder.census.gov/">US Census Factfinder Portal</a>
+
+2010-2014 American Community Survey 5-Year Estimates
+
+Selected economic characteristics
+
+
+**US Population and Demographic Data**
+
+<a href="http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_14_5YR_DP05">US Census Factfinder Portal</a>
+
+2010-2014 American Community Survey 5-Year Estimates
+
+ACS DEMOGRAPHIC AND HOUSING ESTIMATES
+
 
 ---
 
-## Relevant summary statistics
-
-182 zip codes in NYC
-96710 mean income by zip code for NYC
-325025 street condition complaints with reported zip code in date range 
+# Data Characteristics
 
 ---
 
-## Generalizability
+**Data Collection**
 
-Scope of inference
-Identify the population of interest, and whether the findings from this analysis can be generalized to that population, or, if not, a subsection of that population. Explain why or why not. Also discuss any potential sources of bias that might prevent generalizability.
+The roadway data was collected by New York City 311 through phone calls and web forms from individuals contacting the city to complain or inquire about a roadway situation. Phone calls are entered directly into the 311 database by phone operators. 
+
+The US Census demographic and population data was collected by the US government in a 2010-2014 survey. From the Census website: "The American Community Survey (ACS) is a mandatory, ongoing statistical survey that samples a small percentage of the population every year."
 
 ---
 
-## Causality
+**Study Type**
 
-Scope of inference
-Can these data be used to establish causal links between the variables of interest? Explain why or why not.
+This is an observational study as no experiment was created. Some datasets used for this analysis are from sampling done by the US Census.
+
+---
+
+**Response** 
+
+The response variable is the number of complaints per capita for each zip code. This is a numeric variable.
+
+---
+
+**Explanatory**
+
+The proposed explanatory variables are percent race by zip code and mean income by zip code, both numeric.
+
+
+---
+
+**Generalizability**
+
+> Scope of inference: Identify the population of interest, and whether the findings from this analysis can be generalized to that population, or, if not, a subsection of that population. Explain why or why not. Also discuss any potential sources of bias that might prevent generalizability.
+
+---
+
+**Causality**
+
+> Scope of inference: Can these data be used to establish causal links between the variables of interest? Explain why or why not.
 
 ---
 
@@ -161,7 +177,7 @@ Can these data be used to establish causal links between the variables of intere
 
 The following is a list of options for street condition complaints when making a report to 311.
 
-For this project, 7 of the 26 complaints were selected. The five asphalt-related complaints were combined into the asphalt complaint category. The remaining two were the two options for marking complaints: faded and missing.
+For this project, seven of the 26 complaints were selected. The five asphalt-related complaints were combined into the asphalt complaint category. The remaining two were the two options for marking complaints: faded and missing.
 
 ```{r complaintlist, eval=TRUE, warning= FALSE, message=FALSE}
 
@@ -192,7 +208,7 @@ For this project, the data was filtered as follows:
 
 3. Only complaints which were for a street condition.
 
-4. Only the 5 primarily asphalt-related street conditions and 2 markings-related street conditions.
+4. Only the five primarily asphalt-related street conditions and two markings-related street conditions.
 
 **Asphalt conditions**
 
@@ -230,7 +246,10 @@ datatable(df1, options = list( pageLength = 5, lengthMenu = c(5, 10),  initCompl
 ## Zip Code by Borough
 
 A list of zip codes and their associated borough was extracted from the 311 data.
-Created table of zip codes and associated borough
+
+<a href="">Table of zip codes by borough.</a>
+
+<a href="https://github.com/spsstudent15/2016-01-606-Project/blob/master/zipsbyneighborhood.pdf">Table of zip codes by neighborhood name (PDF).</a>
 
 ---
 
@@ -271,10 +290,9 @@ These attributes corresponded to total population per zip code, percent white pe
 
 The datasets were merged and transformed to display the required data. The combined datasets were uploaded to GitHub for reproducibility.
 
+**Attribute Names**
+
 The following is attribute information for the combined primary dataset.
-
-
-**Attribute Names:**
 
 ```{r dictionary, eval=TRUE}
 dict <- getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/sdatadictionary.csv")
@@ -287,39 +305,83 @@ datatable(dictionary, options = list( pageLength = 5, lengthMenu = c(5, 10),  in
 
 ```
 
+
+**Load Data**
+
+Show code to view data loading.
+
 ```{r loaddata, eval=TRUE}
+
+# data by zip code
 sumzipdata <- getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/zipdatacsv2.csv")
 
 sdata<- data.frame(read.csv(text=sumzipdata))
 
+
+# data by month
 monthdata<- getURL("https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/monthlycomplaints.csv")
 
 mdata<- data.frame(read.csv(text=monthdata))
 
 ```
 
+
+<a href="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/zipdatacsv2.csv">Combined dataset of complaints and demographics by zip code.</a>
+
 ---
 
-# Statistics
-
-
+# Analysis
 
 ---
 
 ## Summary
 
-The following is a summary of the primary dataset.
+**Structure and summary statistics of the primary dataset.**
 
-```{r sum1, eval=TRUE}
+See above attribute table for variable descriptions.
+
+```{r summary-2, eval=TRUE}
 # Structure
 # Summary
-# Distribution of Road Condition Complaints Per Capita
-
 str(sdata)
 summary(sdata)
+```
 
+             
+```{r summary-2a, eval=TRUE, warning= FALSE, message=FALSE}
+# Selected statistics
+
+Statistic<-c(46314,
+             0.0388, 
+             48.28, 
+             21.74,
+             49.55,
+             7.95,
+             96710,
+             79395
+             )
+
+Description<-c("Mean population per NYC zip code.",
+               "Mean street condition complaints per capita.",
+               "Mean percent white population per zip code.",
+               "Mean percent black population per zip code.",
+               "Median percent white population per zip code.",
+               "Median percent black population per zip code.",
+               "Mean income per zip code.",
+               "Median income per zip code."
+               )
+
+test2<-data.frame(Statistic,Description)
+
+kable(test2, digits=2)
+```
+
+
+```{r hist-pcomp, eval=TRUE}
+# Distribution of Road Condition Complaints Per Capita
 hist(sdata$pcomp, col="#fff9c4", breaks=10, main="Distribution of Road Condition Complaints Per Capita", xlab="Complaints Per Capita")
 ```
+
 
 ---
 
@@ -356,33 +418,28 @@ abline(minc2)
 
 ```{r race, eval=TRUE}
 # Correlation for Percent White
-# Correlation for Percent Black
-# Distribution of Percent Whites in Zip Code
-# Distribution of Percent Blacks in Zip Code
-# Road Condition Complaints vs. Percentage Whites
-# Road Condition Complaints vs. Percentage Blacks
-# Residuals for Percent White
-# Residuals for Percent Black
-
-
 wcor<-cor(sdata$pcomp, sdata$pwhite)
+
+# Correlation for Percent Black
 bcor<-cor(sdata$pcomp, sdata$pblack)
 
+# Distribution of Percent Whites in Zip Code
 hist(sdata$pwhite, col="#ffcc80", breaks=20, main="White Population", xlab="Distribution of Percent Whites in Zip Code", ylim=c(0,70))
 
+# Distribution of Percent Blacks in Zip Code
 hist(sdata$pblack, col="#26a69a", breaks=20, main="Black Population", xlab="Distribution of Percent Blacks in Zip Code", ylim=c(0,70))
 
+# Road Condition Complaints vs. Percentage Whites
 mwhite<- lm(pcomp ~ pwhite, data = sdata)
 plot(sdata$pcomp ~ sdata$pwhite, col="#ffcc80", main="Road Condition Complaints vs. Percentage Whites", xlab="Percent White Population per Zip Code", ylab="Complaints Per Capita")
 abline(mwhite)
 
+# Road Condition Complaints vs. Percentage Blacks
 mblack<- lm(pcomp ~ pblack, data = sdata)
 plot(sdata$pcomp ~ sdata$pblack, col="#26a69a", main="Road Condition Complaints vs. Percentage Blacks", xlab="Percent Black Population per Zip Code", ylab="Complaints Per Capita")
 abline(mblack)
 
-
 # Residuals for Percent White
-
 plot(mwhite$residuals ~ sdata$pcomp, main="Residuals for Percent White", col="#ffcc80", xlab="Per Capita Complaints", ylab="Residuals")
 abline(mwhite)
 
@@ -393,7 +450,6 @@ qqline(mwhite$residuals, col="#ffcc80")
 
 
 # Residuals for Percent Black
-
 plot(mblack$residuals ~ sdata$pcomp, main="Residuals for Percent Black", col="#26a69a", xlab="Per Capita Complaints", ylab="Residuals")
 abline(mblack)
 
@@ -491,40 +547,54 @@ ggplot(
 
 ## Outliers
 
-High income
+There were several interesting outliers. The graph of per capit income had many outliers in the upper ranges, expected for New York City. 
 
-ZIP_10803 232513	BRONX actually Westchester county
+The box plots for borough response time had more outliers in Manhattan at the upper range of per capita complaints. This could indicate that Manhattan has higher density in general, or a dedicated group of concerned citizens.
 
-ZIP_11109 168940	QUEENS Long Island City new skyscraper condos on the waterfront
+The per capita complaints for Staten Island were significantly greater than other boroughs. Staten Island has historically had issues with road conditions. They are geographically separated from the other four boroughs and have many sprawled suburban areas which are difficult to address in a concise and timely manner.
 
-Highest complaints per capita
-ZIP_10004 Lower Manhattan, includes the NYC DOT headquarters
+There were high income outliers for zip codes. In once case, a Westchester County zip code was being included in the NYC zip code list, possibly due to a shared border street with the Bronx. (ZIP_10803, mean income 232513, Bronx.) 
 
-ZIP_11363 Little Neck, Queens
+A high income outlier for Queens was a zip code in Long Island city across the river from Manhattan, where dozens of new skyscraper condominiums have risen in recent years on the site of previously industrial neighborhoods. (ZIP_11109, mean income 168940, Queens.)
 
-Note on missing/incorrect zip codes showing as 0 income or NA income
+A high outlier for per capita complaints was ZIP_10004 in Lower Manhattan. Interesting, this zip code includes the NYC DOT headquarters, which could potentially be skewing the data due to employees using 311 web forms as part of their job or interest.
+
+Some zip codes in the US Census dataset showed as 0 income or NA income. Researching these zip codes identified these as parks, airports, large office buildings, and in one case the former World Trade Center zip code, which has been discontinued.
+
 
 ---
 
-## Inference
+## Testing
 
 **Satisfying conditions for inference**
 
-Sample size n>30
-Unimodal normal distribution
-Random sample
-
-Theoretical inference (if possible) - hypothesis test and confidence interval
-Simulation based inference - hypothesis test and confidence interval
-Brief description of methodology that reflects your conceptual understanding
+The conditions for inference do appear to be satisfied. The sample size is greater than 30; the datasets follow a unimodal normal distribution; the samples are random.
 
 ---
 
-### Hypothesis test
+**Hypothesis test**
+
+> Theoretical inference (if possible) - hypothesis test and confidence interval
+
+> Simulation based inference - hypothesis test and confidence interval, Brief description of methodology that reflects your conceptual understanding
+
+
+```{r test1, eval=TRUE}
+# summary
+
+summary(mwhite)
+summary(mblack)
+
+inference(y = mwhite, est = "mean", type = "ci", null = 0, alternative = "twosided", method = "theoretical")
+
+inference(y = mblack, est = "mean", type = "ci", null = 0, alternative = "twosided", method = "theoretical")
+
+```
+
 
 ---
 
-### Confidence interval
+**Confidence interval**
 
 
 ---
@@ -540,17 +610,31 @@ Brief description of methodology that reflects your conceptual understanding
 
 ## Insights
 
-Self-selection of 311 reporters
-Why people may  not want to call 311
-Some of these reports are not available on the mobile app and require the web interface or a phone call to report.
+There may be a self-selection of 311 complainants. Certain people may  not want to call 311, for example if they are not comfortable speaking on the phone, or do not have time in their workday, or do not speak English. 311 does provide service in multiple languages, but callers may not know this.
 
-Median income would have been better than mean since high incomes in large cities skews the average higher. In reality, close to 50% of NYC is living below or near the poverty line, a very different story from a mean income of $90,000.
+311 complaints also come from web forms, which is limited to individuals with computers and internet access. While 311 does have a mobile app, it is limited. Some of these complaint categories are not available on the mobile app and require the web interface or a phone call to report.
 
-Missing and faded markings might mean the same thing to 311 callers. For operational purposes I was looking for accurate data since these are handled through different processes.
+Complaints with blank zip codes were excluded to make data analysis possible. However, excluding complaints where the complainant provided voluntary information omit disenfranchised neighborhoods or individuals.
 
-Problems with excluding blank zip codes - this might leave out disenfranchised neighborhoods.
+Median income might have been better a better indicator than mean since high incomes in large cities skews the average higher. In reality, close to 50% of NYC is living below or near the poverty line, a very different story from a mean income of $90,000.
+
+Missing and faded markings might have identical meaning to 311 callers, even though these are significantly different for DOT's processes. For operational purposes I was looking for accurate data since these are handled through different processes.
+
+Grouping race percentage by zip code may not be a reliable indicator of the behavior of a certain race. For example, blacks in majority-white zip codes may be more likely to complain to 311 than blacks in majority-black zip codes, but some of this level of analysis is lost in grouping. 
 
 ---
 
 ## Future Research
+
+These two datasets are extremely rich and much more research could be done. 
+
+Incorporating more Census demographic data could allow for a statistical summary of more variables. This could help develop predictive models of roadway complaints by population characteristics. This could help influence city policies and allow the city to reach underserved or disenfranchised populations.
+
+Monthly complaints could be broken down into borough to see if some boroughs are showing unresolved or increasing conditions at a different rate than other boroughs.
+
+Crowdsourcing in such a large population is bound to have a relevant result. To determine the impact of these complaint numbers, data from the Department of Transporation would be required. For example, a percentage of roadway area paved per month, or a percentage of marking footage totals installed per month. This could show if the city government is responding to complaints proportionally.
+
+A citizen with even a beginning knowledge of R can make significant findings to inform their participation in local government. City agencies have increased data science and GIS approaches in the hopes of harnessing these large streams of data. A targeted approach with a limited scope allows for achievable goals. Combining and analyzing these types of datsets can result in programs to reduce injury and fatality rates citywide.
+
+
 
