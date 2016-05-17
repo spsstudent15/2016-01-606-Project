@@ -23,9 +23,11 @@ When the New York City Department of Transportation maintains roadways in a time
 Managing a city operation is a challenge. With the increase in data collection and reporting, NYC employees and residents have powerful tools to answer questions and identify problem spots. The result of this data analysis could impact funding, hiring, citywide initiatives, and project management at all levels.
 
 
+## Hypothesis
 
-> Null hypothesis and Alternate hypothesis
+$H_0$: Race and income are not predictors of complaints per capita..
 
+$H_a$: Race and/or income are predictors of complaints per capita.
 ---
 
 
@@ -434,6 +436,7 @@ mwhite<- lm(pcomp ~ pwhite, data = sdata)
 plot(sdata$pcomp ~ sdata$pwhite, col="#ffcc80", main="Road Condition Complaints vs. Percentage Whites", xlab="Percent White Population per Zip Code", ylab="Complaints Per Capita")
 abline(mwhite)
 
+
 # Road Condition Complaints vs. Percentage Blacks
 mblack<- lm(pcomp ~ pblack, data = sdata)
 plot(sdata$pcomp ~ sdata$pblack, col="#26a69a", main="Road Condition Complaints vs. Percentage Blacks", xlab="Percent Black Population per Zip Code", ylab="Complaints Per Capita")
@@ -572,29 +575,33 @@ The conditions for inference do appear to be satisfied. The sample size is great
 
 ---
 
-**Hypothesis test**
-
-> Theoretical inference (if possible) - hypothesis test and confidence interval
-
-> Simulation based inference - hypothesis test and confidence interval, Brief description of methodology that reflects your conceptual understanding
+**Confidence interval**
 
 
 ```{r test1, eval=TRUE}
 # summary
 
+load(url("http://bit.ly/dasi_gss_ws_cl"))
+source("http://bit.ly/dasi_inference")
+
+
 summary(mwhite)
 summary(mblack)
 
-inference(y = mwhite, est = "mean", type = "ci", null = 0, alternative = "twosided", method = "theoretical")
+inference(y = sdata$pwhite, est = "mean", type = "ci", null = 0, alternative = "twosided", method = "theoretical")
 
-inference(y = mblack, est = "mean", type = "ci", null = 0, alternative = "twosided", method = "theoretical")
-
+inference(y = sdata$pblack, est = "mean", type = "ci", null = 0, alternative = "twosided", method = "theoretical")
 ```
-
 
 ---
 
-**Confidence interval**
+**ANOVA summary statistics for pblack**
+
+
+```{r test2, eval=TRUE}
+inference(y = sdata$pcomp, x = sdata$pblack, est = "mean", type = "ht", null = 0, alternative = "greater", method = "theoretical")
+
+```
 
 
 ---
