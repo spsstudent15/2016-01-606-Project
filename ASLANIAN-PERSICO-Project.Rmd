@@ -13,6 +13,9 @@ output:
 
 # Introduction
 
+<center><img src="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/paving.png" height="250px"/></center>
+
+Photo credit: NYC DOT
 
 ---
 
@@ -22,14 +25,19 @@ When the New York City Department of Transportation maintains roadways in a time
 
 Managing a city operation is a challenge. With the increase in data collection and reporting, NYC employees and residents have powerful tools to answer questions and identify problem spots. The result of this data analysis could impact funding, hiring, citywide initiatives, and project management at all levels.
 
+New York City 311 is a free public service that allows individuals to register complaints or inquiries on city conditions. Comparing the roadway condition complaints to Census data has great potential for statistical discovery. 
 
 ## Hypothesis
 
-$H_0$: Race and income are not predictors of complaints per capita..
+Comparing majority black and majority white populations, is there a correlation between race and per capita roadway condition complaints across zip codes?
 
-$H_a$: Race and/or income are predictors of complaints per capita.
+Using mean income per zip code, is there a correlation between income and roadway condition complaints?
+
+$H_0$: Race and income are not predictors of roadway condition complaints per capita..
+
+$H_a$: Race and/or income are predictors of roadway condition complaints per capita.
+
 ---
-
 
 ## Libraries
 
@@ -160,13 +168,13 @@ The proposed explanatory variables are percent race by zip code and mean income 
 
 **Generalizability**
 
-> Scope of inference: Identify the population of interest, and whether the findings from this analysis can be generalized to that population, or, if not, a subsection of that population. Explain why or why not. Also discuss any potential sources of bias that might prevent generalizability.
+The data includes sample demographic statistics across New York City. The complaint data is limited to the individuals who interact with that particular government service. However, due to the volume of 311 records, a significant percentage of the city population is being represented in these cases. Therefore, the sample data is generalizable to the city.
 
 ---
 
 **Causality**
 
-> Scope of inference: Can these data be used to establish causal links between the variables of interest? Explain why or why not.
+There are many causalities related to race, income and social services. Therefore, it may not be possible to infer that race or income alone affects interaction with local government. Additionally, a complaint is not necessarily an indication of a poor roadway condition. Certain populations may complain less while still experiencing poor conditions. 
 
 ---
 
@@ -390,24 +398,24 @@ hist(sdata$pcomp, col="#fff9c4", breaks=10, main="Distribution of Road Condition
 ## Income
 
 ```{r income, eval=TRUE}
-# Box Plot of Income and Population by Zip Code
-# Distribution of Income
-# Road Condition Complaints vs. Income
-# Road Condition Complaints vs. Income, with xlim1
-# Road Condition Complaints vs. Income, with xlim2
 
+# Box Plot of Income and Population by Zip Code
 boxplot(sdata$income, sdata$pop, names=c("Income","Population"), col=c("#c5e1a5","#ffe0b2"), main="Box Plot of Income and Population by Zip Code")
 
+# Distribution of Income
 hist(sdata$income, col="#c5e1a5", breaks=20, main="Distribution of Income", xlab="Income")
 
+# Road Condition Complaints vs. Income
 minc<- lm(pcomp ~ income, data = sdata)
 plot(sdata$pcomp ~ sdata$income, col="#81d4fa", main="Road Condition Complaints vs. Income", xlab="Income", ylab="Complaints Per Capita")
 abline(minc)
 
+# Road Condition Complaints vs. Income, with xlim1
 minc1<- lm(pcomp ~ income, data = sdata)
 plot(sdata$pcomp ~ sdata$income, col="#1976d2", main="Road Condition Complaints vs. Income, $20,000-$200,000", xlab="Income", ylab="Complaints Per Capita", xlim=c(20000,200000))
 abline(minc1)
 
+# Road Condition Complaints vs. Income, with xlim2
 minc2<- lm(pcomp ~ income, data = sdata)
 plot(sdata$pcomp ~ sdata$income, col="#01579b", main="Road Condition Complaints vs. Income, $30,000-$100,000", xlab="Income", ylab="Complaints Per Capita", xlim=c(30000,100000), ylim=c(0,0.10))
 abline(minc2)
@@ -435,7 +443,6 @@ hist(sdata$pblack, col="#26a69a", breaks=20, main="Black Population", xlab="Dist
 mwhite<- lm(pcomp ~ pwhite, data = sdata)
 plot(sdata$pcomp ~ sdata$pwhite, col="#ffcc80", main="Road Condition Complaints vs. Percentage Whites", xlab="Percent White Population per Zip Code", ylab="Complaints Per Capita")
 abline(mwhite)
-
 
 # Road Condition Complaints vs. Percentage Blacks
 mblack<- lm(pcomp ~ pblack, data = sdata)
@@ -577,16 +584,19 @@ The conditions for inference do appear to be satisfied. The sample size is great
 
 **Confidence interval**
 
+```{r confidence, eval=TRUE}
+summary(mwhite)
+summary(mblack)
+summary(minc)
+```
 
-```{r test1, eval=TRUE}
+**Inference**
+
+```{r inference, eval=TRUE}
 # summary
 
 load(url("http://bit.ly/dasi_gss_ws_cl"))
 source("http://bit.ly/dasi_inference")
-
-
-summary(mwhite)
-summary(mblack)
 
 inference(y = sdata$pwhite, est = "mean", type = "ci", null = 0, alternative = "twosided", method = "theoretical")
 
@@ -595,11 +605,11 @@ inference(y = sdata$pblack, est = "mean", type = "ci", null = 0, alternative = "
 
 ---
 
-**ANOVA summary statistics for pblack**
+**ANOVA summary statistics for income**
 
 
 ```{r test2, eval=TRUE}
-inference(y = sdata$pcomp, x = sdata$pblack, est = "mean", type = "ht", null = 0, alternative = "greater", method = "theoretical")
+inference(y = sdata$pcomp, x = sdata$income, est = "mean", type = "ht", null = 0, alternative = "greater", method = "theoretical")
 
 ```
 
