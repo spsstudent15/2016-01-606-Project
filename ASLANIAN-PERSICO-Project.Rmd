@@ -13,9 +13,9 @@ output:
 
 # Introduction
 
-<center><img src="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/paving.png" height="250px" border="1"/></center>
-
-Photo credit: NYC DOT
+<center><img src="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/paving.png" height="250px" border="2"/></center>
+<br>
+Credit: NYC DOT
 
 ---
 
@@ -33,7 +33,7 @@ Comparing majority black and majority white populations, is there a correlation 
 
 Using mean income per zip code, is there a correlation between income and roadway condition complaints?
 
-$H_0$: Race and income are correlated with roadway condition complaints per capita.
+$H_0$: Race and income are not correlated with roadway condition complaints per capita.
 
 $H_a$: Race and/or income are correlated with roadway condition complaints per capita.
 
@@ -180,7 +180,7 @@ There are many causalities related to race, income and social services. Therefor
 
 # Transformation
 
-<center><img src="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/nyc311.png" height="250px"/></center>
+<center><img src="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/nyc311.png" height="250px" border="1"/></center>
 
 ---
 
@@ -259,7 +259,7 @@ datatable(df1, options = list( pageLength = 5, lengthMenu = c(5, 10),  initCompl
 
 A list of zip codes and their associated borough was extracted from the 311 data.
 
-<a href="">Table of zip codes by borough.</a>
+<a href="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/zipbyboro.csv">Table of zip codes by borough.</a>
 
 <a href="https://github.com/spsstudent15/2016-01-606-Project/blob/master/zipsbyneighborhood.pdf">Table of zip codes by neighborhood name (PDF).</a>
 
@@ -640,7 +640,7 @@ There may be a self-selection of 311 complainants. Certain people may  not want 
 
 Complaints with blank zip codes were excluded to make data analysis possible. However, excluding complaints where the complainant provided voluntary information omit disenfranchised neighborhoods or individuals.
 
-Median income might have been better a better indicator than mean since high incomes in large cities skews the average higher. In reality, close to 50% of NYC is living below or near the poverty line, a very different story from a mean income of $90,000.
+Median income might have been a better indicator than mean since high incomes in large cities skew the average higher. In reality, close to 50% of NYC is living below or near the poverty line, a very different story from a mean income of $90,000.
 
 Missing and faded markings might have identical meaning to 311 callers, even though these are significantly different for DOT's processes. For operational purposes I was looking for accurate data since these are handled through different processes.
 
@@ -660,7 +660,11 @@ Crowdsourcing in such a large population is bound to have a relevant result. To 
 
 A citizen with even a beginning knowledge of R can make significant findings to inform their participation in local government. City agencies have increased data science and GIS approaches in the hopes of harnessing these large streams of data. A targeted approach with a limited scope allows for achievable goals. Combining and analyzing these types of datsets can result in programs to reduce injury and fatality rates citywide.
 
-<center><img src="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/chrystiestreet.png" height="250px"/></center>
+---
 
-<center>Photo credit: NYC DOT</center>
+<center><img src="https://raw.githubusercontent.com/spsstudent15/2016-01-606-Project/master/chrystiestreet.png" height="400px" border="1"/></center>
+
+<br>
+<center>**Rendering of Chrystie Street, Manhattan, proposed bike lane.**</center>
+<center>Credit: NYC DOT</center>
 
