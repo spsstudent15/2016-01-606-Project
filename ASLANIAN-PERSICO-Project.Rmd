@@ -559,7 +559,7 @@ ggplot(
 
 ## Outliers
 
-There were several interesting outliers. The graph of per capit income had many outliers in the upper ranges, expected for New York City. 
+There were several interesting outliers. The graph of per capita income had many outliers in the upper ranges, expected for New York City. 
 
 The box plots for borough response time had more outliers in Manhattan at the upper range of per capita complaints. This could indicate that Manhattan has higher density in general, or a dedicated group of concerned citizens.
 
@@ -656,9 +656,9 @@ Incorporating more Census demographic data could allow for a statistical summary
 
 Monthly complaints could be broken down into borough to see if some boroughs are showing unresolved or increasing conditions at a different rate than other boroughs.
 
-Crowdsourcing in such a large population is bound to have a relevant result. To determine the impact of these complaint numbers, data from the Department of Transporation would be required. For example, a percentage of roadway area paved per month, or a percentage of marking footage totals installed per month. This could show if the city government is responding to complaints proportionally.
+Crowdsourcing in such a large population is bound to have a relevant result. To determine the impact of these complaint numbers, data from the Department of Transportation would be required. For example, a percentage of roadway area paved per month, or a percentage of marking footage totals installed per month. This could show if the city government is responding to complaints proportionally.
 
-A citizen with even a beginning knowledge of R can make significant findings to inform their participation in local government. City agencies have increased data science and GIS approaches in the hopes of harnessing these large streams of data. A targeted approach with a limited scope allows for achievable goals. Combining and analyzing these types of datsets can result in programs to reduce injury and fatality rates citywide.
+A citizen with even a beginning knowledge of R can make significant findings to inform their participation in local government. City agencies have increased data science and GIS approaches in the hopes of harnessing these large streams of data. A targeted approach with a limited scope allows for achievable goals. Combining and analyzing these types of datasets can result in programs to reduce injury and fatality rates citywide.
 
 ---
 
